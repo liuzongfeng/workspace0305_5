@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../plugins/layui2/css/layui.css"  media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<form class="layui-form" style="float:left;">
+    <div class="layui-form-item" style="margin:2px;">
+        <label class="layui-form-label">城市名称</label>
+        <div class="layui-input-inline">
+            <input id="paramCityName" type="text" name="name" placeholder="支持模糊查询.." autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="padding:0;">
+            <button lay-filter="search" class="layui-btn" lay-submit><i class="fa fa-search" aria-hidden="true"></i> 查询</button>
+        </div>
+    </div>
+</form>
+
+<table id="dataListTable" class="layui-table" >
+    <!--<thead>
+    <tr>
+        <th lay-data="{field:'cityname',width:120}" rowspan="2">数据分类</th>
+        <th lay-data="{align:'center'}" colspan="6">案例数据类</th>
+        <th lay-data="{align:'center'}" colspan="4">基础数据类</th>
+    </tr>
+    <tr>
+        <th lay-data="{field:'anliData', width:110, templet: '<div>{{d.anliData.azsChengjiao}}</div>'}">住宅出售成交</th>
+        <th lay-data="{field:'anliData', width:110 , templet: '<div>{{d.anliData.azzChengjiao}}</div>'}">住宅出租成交</th>
+        <th lay-data="{field:'anliData', width:110 , templet: '<div>{{d.anliData.azsGuapai}}</div>'}">住宅出售挂牌</th>
+        <th lay-data="{field:'anliData', width:110 , templet: '<div>{{d.anliData.azzGuapai}}</div>'}">住宅出租挂牌</th>
+        <th lay-data="{field:'anliData', width:110 , templet: '<div>{{d.anliData.afzsGuapai}}</div>'}">非住宅出售挂牌</th>
+        <th lay-data="{field:'anliData', width:110 , templet: '<div>{{d.anliData.afzzGuapai}}</div>'}">非住宅出租挂牌</th>
+
+        <th lay-data="{field:'basicData', width:110 , templet: '<div>{{d.basicData.jZhoubianpeitao}}</div>'}">周边配套</th>
+        <th lay-data="{field:'basicData', width:110 , templet: '<div>{{d.basicData.jXiaoqupingji}}</div>'}">小区评级</th>
+        <th lay-data="{field:'basicData', width:110 , templet: '<div>{{d.basicData.jJichushuliang}}</div>'}">基础数据</th>
+        <th lay-data="{field:'basicData', width:110 , templet: '<div>{{d.basicData.jZhishu}}</div>'}">指数</th>
+    </tr>
+    </thead>-->
+</table>
+
+
+
+
+
+
+
+
+<!--<script src="plugins/layui/dist/layui.js" charset="utf-8"></script>-->
+<script type="text/javascript" src="../plugins/layui2/layui.js"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+layui.use(['table','form'], function(){
+  var table = layui.table,
+        form = layui.form
+        $ = layui.jquery;
+
+  //页面加载时渲染数据表格
+  var tableIns =  table.render({
+            elem: '#dataListTable'
+            ,height: 400
+            ,url:'/MyLogin/obtainDataList'
+            ,cols: [[
+                   {field:'cityname',width:120,title : '数据分类' , rowspan : 2}
+                   ,{align:'center', width:110,title : '基础数据类' ,colspan : 4 }
+                   ],[
+
+
+
+                    {field:'basicData', width:110 ,title : '周边配套', templet: '#jZhoubianpeitao_id'},
+                    {field:'basicData', width:110 ,title : '小区评级', templet: '#jXiaoqupingji_id'},
+                    {field:'basicData', width:110 ,title : '基础数据', templet: '#jJichushuliang_id'},
+                    {field:'basicData', width:110 ,title : '指数', templet: '#jZhishu_id'},
+
+
+                ]]
+
+          });
+
+
+  //查询时渲染数据表
+  form.on('submit(search)',function(data){
+        var cityNameParam = $("#paramCityName").val();
+		//重新渲染表格
+        tableIns.reload({
+          where: { //设定异步数据接口的额外参数，任意设
+            cityNameParam: cityNameParam
+          }
+
+        });
+	    return false;
+  });
+
+});
+
+</script>
+
+<script type="text/html" id="jZhoubianpeitao_id">
+    {{#  if(d.basicData.jZhoubianpeitao == null || d.basicData.jZhoubianpeitao <1){ }}
+
+    {{#  } else if(d.basicData.jZhoubianpeitao == 1 && d.cityname != "覆盖城市数量"){ }}
+    √
+    {{#  } else { }}
+    {{d.basicData.jZhoubianpeitao}}
+    {{#  } }}
+</script>
+<script type="text/html" id="jXiaoqupingji_id">
+    {{#  if(d.basicData.jXiaoqupingji == null || d.basicData.jXiaoqupingji <1){ }}
+
+    {{#  } else if(d.basicData.jXiaoqupingji == 1 && d.cityname != "覆盖城市数量"){ }}
+    √
+    {{#  } else { }}
+    {{d.basicData.jXiaoqupingji}}
+    {{#  } }}
+</script>
+<script type="text/html" id="jJichushuliang_id">
+    {{#  if(d.basicData.jJichushuliang == null || d.basicData.jJichushuliang <1){ }}
+
+    {{#  } else if(d.basicData.jJichushuliang == 1 && d.cityname != "覆盖城市数量"){ }}
+    √
+    {{#  } else { }}
+    {{d.basicData.jJichushuliang}}
+    {{#  } }}
+</script>
+<script type="text/html" id="jZhishu_id">
+    {{#  if(d.basicData.jZhishu == null || d.basicData.jZhishu <1){ }}
+
+    {{#  } else if(d.basicData.jZhishu == 1 && d.cityname != "覆盖城市数量"){ }}
+    √
+    {{#  } else { }}
+    {{d.basicData.jZhishu}}
+    {{#  } }}
+</script>
+
+</body>
+</html>
